@@ -25,7 +25,6 @@
  */
 
 #include "LedControl.h"
-#include "Arduino.h"
 
 //the opcodes for the MAX7221 and MAX7219
 #define OP_NOOP 0
@@ -68,6 +67,12 @@ LedControl::LedControl(int dataPin, int clkPin, int csPin, int numDevices)
         clearDisplay(i);
         //we go into shutdown-mode on startup
         shutdown(i, true);
+    }
+
+    commonAnode = false;
+    for (int i = 0; i < 8; i++)
+    {
+        commonAnodeData[i] = B00000000;
     }
 }
 
@@ -228,29 +233,29 @@ void LedControl::setChar(int addr, int digit, char value, boolean dp, bool rever
     transfer(addr, digit + 1, v, reverse);
 }
 
+// String Misc_DecTo8bitBinary(int dec)
+// {
+//     String result = "";
+//     for (unsigned int i = 0x80; i; i >>= 1)
+//     {
+//         result.concat(dec & i ? '1' : '0');
+//     }
+//     return result;
+// }
+
 void LedControl::transfer(int addr, volatile byte opcode, volatile byte data, bool reverse)
 {
     data = (reverse) ? flipByte(data) : data;
 
     if (commonAnode)
     {
-        // Convert adress to segment
-        byte convertedData = B00000000;
-        for (short dS = 1; dS < 8; dS++)
-        {
-            if (bitRead(opcode, 7 - dS))
-            {
-                convertedData |= pgm_read_byte_near(datasConvert + (7 - dS));
-            }
-        }
-
         // Convert Segment to addr
         for (short cS = 0; cS < 8; cS++)
         {
             // MSB need a special treatment
             int bitIndex = (cS == 7) ? 7 : 6 - cS;
-
-            spiTransfer(addr, (byte)cS + 1, (bitRead(data, (bitIndex))) ? convertedData : 0);
+            bitWrite(commonAnodeData[cS], 7-opcode, (bitRead(data, bitIndex)));
+            spiTransfer(addr, (byte)cS + 1, commonAnodeData[cS]);
         }
     }
     else

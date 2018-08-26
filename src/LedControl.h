@@ -57,9 +57,6 @@ const static byte charTable[] PROGMEM = {
     B01100111, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000};
 
-const static byte datasConvert[] PROGMEM = {
-    B01000000, B00100000, B00010000, B00001000, B00000100, B00000010, B00000001, B10000000};
-
 class LedControl
 {
   private:
@@ -84,6 +81,8 @@ class LedControl
 
     /* Common Anode mode (reverse digit and segments) */
     bool commonAnode;
+    /* data saved in anode mode */
+    byte commonAnodeData[8];
 
   public:
     /* 
