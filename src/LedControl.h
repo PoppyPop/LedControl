@@ -182,7 +182,7 @@ class LedControl
          * value	the value to be displayed. (0x00..0x0F)
          * dp	sets the decimal point.
          */
-    void setDigit(int addr, int digit, byte value, boolean dp, bool reverse = false);
+    void setDigit(int addr, int digit, byte value, boolean dp = false, bool reverse = false);
 
     /* 
          * Display a character on a 7-Segment display.
@@ -196,7 +196,7 @@ class LedControl
          * value	the character to be displayed. 
          * dp	sets the decimal point.
          */
-    void setChar(int addr, int digit, char value, boolean dp, bool reverse = false);
+    void setChar(int addr, int digit, char value, boolean dp = false, bool reverse = false);
 };
 
 #endif //LedControl.h
