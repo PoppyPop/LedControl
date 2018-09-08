@@ -253,8 +253,10 @@ void LedControl::transfer(int addr, volatile byte opcode, volatile byte data, bo
         for (short cS = 0; cS < 8; cS++)
         {
             // MSB need a special treatment
-            int bitIndex = (cS == 7) ? 7 : 6 - cS;
-            bitWrite(commonAnodeData[cS], 7-opcode, (bitRead(data, bitIndex)));
+            int readIndex = (cS == 7) ? 7 : 6 - cS;
+            int writeIndex = (opcode == 8) ? 7 : 7 - opcode;
+            bitWrite(commonAnodeData[cS], writeIndex, (bitRead(data, readIndex)));
+
             spiTransfer(addr, (byte)cS + 1, commonAnodeData[cS]);
         }
     }
